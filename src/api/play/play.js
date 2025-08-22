@@ -65,4 +65,17 @@ export function uploadGame(data) {
     }
   });
 }
+export function getPlayLogDetail(id) {
+  return request({
+    url: `/play/info/log/${id}`,
+    method: 'get'
+  })
+}
+export function getPlayLogDetailByTime(params) {
+  return request({
+    url: `/play/info/playLogByTime`,
+    method: 'post',
+    data:  params
+  })
+}
 

@@ -45,9 +45,6 @@
       <el-table-column label="日活跃用户" align="center" prop="dau" />
       <el-table-column label="平均加载时长(秒)" align="center" prop="loadTime" />
       <el-table-column label="人均打开app次数" align="center" prop="peopleCount">
-        <template slot-scope="scope">
-          {{ scope.row.peopleCount }}%
-        </template>
       </el-table-column>
       <el-table-column label="人均游戏时长(秒)" align="center" prop="peoplePlayTime" />
       <el-table-column label="总游戏时长(秒)" align="center" prop="totalPlayTime" />

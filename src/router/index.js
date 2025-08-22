@@ -93,6 +93,12 @@ export const constantRoutes = [
     name: 'UserDetail',
     component: () => import('@/views/play/user/UserDetail.vue'),
     props: true
+  },
+  {
+    path: '/play/info/PlayLogDetail/:playNum',
+    name: 'PlayLogDetail',
+    component: () => import('@/views/play/game/PlayLogDetail.vue'),
+    props: true
   }
 ]
 

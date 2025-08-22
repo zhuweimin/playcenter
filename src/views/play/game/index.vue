@@ -47,13 +47,23 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="playList" @selection-change="handleSelectionChange">
-      <el-table-column label="游戏编号" align="center" prop="playNum" />
+      <el-table-column label="游戏编号" align="center" prop="playNum">
+        <template slot-scope="scope">
+          <router-link
+            :to="{ name: 'PlayLogDetail', params: { playNum: scope.row.playNum } }"
+            class="link-type">
+            <span>{{ scope.row.playNum }}</span>
+          </router-link>
+
+        </template>
+      </el-table-column>
       <el-table-column label="ICON" align="center" prop="icon">
         <template slot-scope="scope">
           <el-image
@@ -86,18 +96,18 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="游戏名称" align="center" prop="playName" />
-      <el-table-column label="游戏状态" align="center" prop="playStatusStr" />
-      <el-table-column label="游戏包" align="center" prop="playUrl" />
+      <el-table-column label="游戏名称" align="center" prop="playName"/>
+      <el-table-column label="游戏状态" align="center" prop="playStatusStr"/>
+      <el-table-column label="游戏包" align="center" prop="playUrl"/>
       <el-table-column label="屏幕方向" align="center" prop="direction">
         <template slot-scope="scope">
           <span>{{ scope.row.direction === 'vertical' ? '竖屏' : '横屏' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="游戏排序" align="center" prop="sortNum" />
-      <el-table-column label="游戏标签" align="center" prop="playTag" />
-      <el-table-column label="游戏描述" align="center" prop="playDesc" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180" />
+      <el-table-column label="游戏排序" align="center" prop="sortNum"/>
+      <el-table-column label="游戏标签" align="center" prop="playTag"/>
+      <el-table-column label="游戏描述" align="center" prop="playDesc"/>
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -105,13 +115,15 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -128,7 +140,8 @@
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="游戏名称" prop="playNameList">
-          <div v-for="(item, index) in form.playNameList" :key="index" style="display: flex; margin-bottom: 10px; align-items: center;">
+          <div v-for="(item, index) in form.playNameList" :key="index"
+               style="display: flex; margin-bottom: 10px; align-items: center;">
             <el-input
               v-model="item.value"
               placeholder="请输入游戏名称"
@@ -164,7 +177,8 @@
         </el-form-item>
 
         <el-form-item label="游戏标签" prop="playTagList">
-          <div v-for="(item, index) in form.playTagList" :key="index" style="display: flex; margin-bottom: 10px; align-items: center;">
+          <div v-for="(item, index) in form.playTagList" :key="index"
+               style="display: flex; margin-bottom: 10px; align-items: center;">
             <el-input
               v-model="item.value"
               placeholder="请输入游戏标签"
@@ -200,7 +214,8 @@
         </el-form-item>
 
         <el-form-item label="游戏描述" prop="playDescList">
-          <div v-for="(item, index) in form.playDescList" :key="index" style="display: flex; margin-bottom: 10px; align-items: center;">
+          <div v-for="(item, index) in form.playDescList" :key="index"
+               style="display: flex; margin-bottom: 10px; align-items: center;">
             <el-input
               v-model="item.value"
               placeholder="请输入游戏描述"
@@ -294,7 +309,7 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="游戏排序" prop="sortNum">
-          <el-input-number v-model="form.sortNum" controls-position="right" :min="0" />
+          <el-input-number v-model="form.sortNum" controls-position="right" :min="0"/>
         </el-form-item>
 
       </el-form>
@@ -307,8 +322,9 @@
 </template>
 
 <script>
-import { listPlay, delPlay, addPlay, updatePlay,uploadGame,uploadImg } from "@/api/play/play";
-import { getDicts} from "@/api/system/dict/data";
+import {listPlay, delPlay, addPlay, updatePlay, uploadGame, uploadImg} from "@/api/play/play";
+import {getDicts} from "@/api/system/dict/data";
+
 export default {
   name: "PlayPreview",
   data() {
@@ -355,25 +371,25 @@ export default {
         //   { required: true, message: "游戏名称不能为空", trigger: "blur" }
         // ],
         playStatus: [
-          { required: true, message: "游戏状态不能为空", trigger: "blur" }
+          {required: true, message: "游戏状态不能为空", trigger: "blur"}
         ],
         playNum: [
-          { required: true, message: "游戏编号不能为空", trigger: "blur" }
+          {required: true, message: "游戏编号不能为空", trigger: "blur"}
         ],
         playUrl: [
-          { required: true, message: "游戏地址不能为空", trigger: "blur" }
+          {required: true, message: "游戏地址不能为空", trigger: "blur"}
         ],
         icon: [
-          { required: true, message: "ICON不能为空", trigger: "blur" }
+          {required: true, message: "ICON不能为空", trigger: "blur"}
         ],
         cover: [
-          { required: true, message: "封面不能为空", trigger: "blur" }
+          {required: true, message: "封面不能为空", trigger: "blur"}
         ],
         sortNum: [
-          { required: true, message: "游戏排序不能为空", trigger: "blur" }
+          {required: true, message: "游戏排序不能为空", trigger: "blur"}
         ],
         direction: [
-          { required: true, message: "屏幕方向不能为空", trigger: "blur" }
+          {required: true, message: "屏幕方向不能为空", trigger: "blur"}
         ]
       }
     };
@@ -383,7 +399,9 @@ export default {
     this.dictList();
   },
   methods: {
-    dictList(){
+
+
+    dictList() {
       getDicts("language_type").then(response => {
         this.languageOptions = response.data;
       }).catch(error => {
@@ -392,7 +410,7 @@ export default {
         this.loading = false;
       })
     },
-    uploadPlayGame(option){
+    uploadPlayGame(option) {
       const formData = new FormData();
       formData.append('file', option.file);
 
@@ -403,7 +421,7 @@ export default {
       // 如果还有其他需要传递的参数，可以继续添加
       // 例如：formData.append('paramName', paramValue);
       uploadGame(formData).then(res => {
-        if(res.code === 200){
+        if (res.code === 200) {
           // this.playUrl=res.data.path;
           // this.id=res.data.id;
           this.handleGameAvatarSuccess(res, option.file)
@@ -411,7 +429,7 @@ export default {
         // this.backgroundUrl = res.data.backgroundUrl;
       });
     },
-    uploadIcon(option){
+    uploadIcon(option) {
       const formData = new FormData();
       formData.append('file', option.file);
       formData.append('uploadType', 1);
@@ -423,7 +441,7 @@ export default {
       // 如果还有其他需要传递的参数，可以继续添加
       // 例如：formData.append('paramName', paramValue);
       uploadImg(formData).then(res => {
-        if(res.code === 200){
+        if (res.code === 200) {
           // this.iconImg=res.data.path;
           // this.id=res.data.id;
           this.handleAvatarSuccess(res, option.file);
@@ -432,7 +450,7 @@ export default {
         // this.backgroundUrl = res.data.backgroundUrl;
       });
     },
-    uploadCover(option){
+    uploadCover(option) {
       const formData = new FormData();
       formData.append('file', option.file);
       formData.append('uploadType', 2);
@@ -444,7 +462,7 @@ export default {
       // 如果还有其他需要传递的参数，可以继续添加
       // 例如：formData.append('paramName', paramValue);
       uploadImg(formData).then(res => {
-        if(res.code === 200){
+        if (res.code === 200) {
           // this.coverImg=res.data.path;
           // this.id=res.data.id;
           this.handleCoverAvatarSuccess(res, option.file)
@@ -455,14 +473,14 @@ export default {
     handleGameAvatarSuccess(res, file) {
       this.playUrl = res.data.path;
       this.id = res.data.id;
-      this.file=file;
-      this.form.playUrl=res.data.path;
-      this.form.id=res.data.id;
+      this.file = file;
+      this.form.playUrl = res.data.path;
+      this.form.id = res.data.id;
     },
 
     beforeGameAvatarUpload(file) {
       const isJPNG = file.type === 'application/x-zip-compressed';
-      const isLt2M = file.size   < 150*1024*1024;
+      const isLt2M = file.size < 150 * 1024 * 1024;
 
       if (!isJPNG) {
         this.$message.error('上传游戏包只允许ZIP格式!');
@@ -476,9 +494,9 @@ export default {
     handleAvatarSuccess(res, file) {
       this.iconImg = res.data.path;
       this.id = res.data.id;
-      this.file=file;
-      this.form.icon=res.data.path;
-      this.form.id=res.data.id;
+      this.file = file;
+      this.form.icon = res.data.path;
+      this.form.id = res.data.id;
     },
 
     beforeAvatarUpload(file) {
@@ -497,9 +515,9 @@ export default {
     handleCoverAvatarSuccess(res, file) {
       this.coverImg = res.data.path;
       this.id = res.data.id;
-      this.file=file;
-      this.form.cover=res.data.path;
-      this.form.id=res.data.id;
+      this.file = file;
+      this.form.cover = res.data.path;
+      this.form.id = res.data.id;
     },
 
     beforeCoverAvatarUpload(file) {
@@ -548,9 +566,9 @@ export default {
         playDesc: undefined,
         direction: undefined,
 
-        playNameList: [{ value: '', language: '' }],
-        playTagList: [{ value: '', language: '' }],
-        playDescList: [{ value: '', language: '' }]
+        playNameList: [{value: '', language: ''}],
+        playTagList: [{value: '', language: ''}],
+        playDescList: [{value: '', language: ''}]
       };
       this.resetForm("form");
     },
@@ -580,15 +598,15 @@ export default {
     handleUpdate(row) {
       this.reset();
       this.form = {...row};
-      if(row.playNameList.length === 0){
-        this.form.playNameList = [{value:'',language:''}]
+      if (row.playNameList.length === 0) {
+        this.form.playNameList = [{value: '', language: ''}]
       }
-      if(row.playTagList.length === 0){
+      if (row.playTagList.length === 0) {
 
-        this.form.playTagList = [{value:'',language:''}]
+        this.form.playTagList = [{value: '', language: ''}]
       }
-      if(row.playDescList.length === 0){
-        this.form.playDescList = [{value:'',language:''}]
+      if (row.playDescList.length === 0) {
+        this.form.playDescList = [{value: '', language: ''}]
       }
       // 初始化多语言列表
       // this.form.playNameList = [{ value: row.playName || '', language: '' }];
@@ -599,7 +617,7 @@ export default {
     },
     // 添加游戏名称输入框
     addPlayName() {
-      this.form.playNameList.push({ value: '', language: '' });
+      this.form.playNameList.push({value: '', language: ''});
     },
     // 删除游戏名称输入框
     removePlayName(index) {
@@ -607,7 +625,7 @@ export default {
     },
     // 添加游戏标签输入框
     addPlayTag() {
-      this.form.playTagList.push({ value: '', language: '' });
+      this.form.playTagList.push({value: '', language: ''});
     },
     // 删除游戏标签输入框
     removePlayTag(index) {
@@ -615,7 +633,7 @@ export default {
     },
     // 添加游戏描述输入框
     addPlayDesc() {
-      this.form.playDescList.push({ value: '', language: '' });
+      this.form.playDescList.push({value: '', language: ''});
     },
     // 删除游戏描述输入框
     removePlayDesc(index) {
@@ -626,7 +644,7 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           // 准备提交数据
-          const submitData = { ...this.form };
+          const submitData = {...this.form};
 
           if (this.form.id != null) {
             updatePlay(submitData).then(response => {
@@ -647,12 +665,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const playIds = row.id || this.ids;
-      this.$modal.confirm('是否确认删除游戏编号为"' + playIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除游戏编号为"' + playIds + '"的数据项？').then(function () {
         return delPlay(playIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     }
   }
 };
