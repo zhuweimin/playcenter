@@ -9,6 +9,21 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="语言" prop="language">
+        <el-select
+          v-model="queryParams.language"
+          placeholder="请选择语言"
+          clearable
+          @change="handleQuery"
+        >
+          <el-option
+            v-for="dict in languageOptions"
+            :key="dict.dictLabel"
+            :label="dict.dictValue"
+            :value="dict.dictLabel"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="开始时间" prop="startTime">
         <el-date-picker
           v-model="queryParams.startTime"
@@ -165,7 +180,7 @@
 <script>
 import {playList} from "@/api/play/play";
 import {listHot, saveHot, updateHot, delHot} from "@/api/play/hot";
-
+import {getDicts} from "@/api/system/dict/data";
 
 export default {
   name: "PlayHot",
@@ -175,6 +190,7 @@ export default {
       loading: true,
       // 遮罩层（游戏搜索）
       playLoading: false,
+      languageOptions: [],
       // 选中数组
       ids: [],
       id: undefined,
@@ -200,6 +216,7 @@ export default {
       queryParams: {
         pageNum: 0,
         pageSize: 10,
+        language: undefined,
         playName: undefined,
         status: undefined,
         endTime: undefined,
@@ -221,9 +238,18 @@ export default {
   },
   created() {
     this.listHot();
+    this.dictList();
   },
   methods: {
-
+    dictList() {
+      getDicts("language_type").then(response => {
+        this.languageOptions = response.data;
+      }).catch(error => {
+        console.error("获取字典列表失败:", error);
+        this.$message.error("获取字典列表失败，请稍后重试");
+        this.loading = false;
+      })
+    },
     /** 查询游戏横幅列表 */
     listHot() {
       this.loading = true;
@@ -296,7 +322,6 @@ export default {
               if(response.code === 200){
                 this.$modal.msgSuccess("修改成功");
                 this.open = false;
-                this.listHot();
               }else{
                 this.$modal.msgError(response.msg);
               }
@@ -307,13 +332,13 @@ export default {
               if(response.code === 200) {
                 this.$modal.msgSuccess("新增成功");
                 this.open = false;
-                this.listHot();
+
               }else{
                 this.$modal.msgError(response.msg);
               }
             })
           }
-
+          this.listHot();
 
         }
       });
@@ -325,9 +350,8 @@ export default {
       this.$modal.confirm('是否确认删编号为"' + hotIds + '"的数据项？').then(() => {
         this.loading=true;
         // 这里应该调用删除横幅的接口
-        return delHot(hotIds);
+        return delHot(row);
         // 模拟删除操作
-
       }).then(() => {
         this.listHot();
         this.$modal.msgSuccess("删除成功");

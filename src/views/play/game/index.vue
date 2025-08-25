@@ -55,14 +55,6 @@
 
     <el-table v-loading="loading" :data="playList" @selection-change="handleSelectionChange">
       <el-table-column label="游戏编号" align="center" prop="playNum">
-        <template slot-scope="scope">
-          <router-link
-            :to="{ name: 'PlayLogDetail', params: { playNum: scope.row.playNum } }"
-            class="link-type">
-            <span>{{ scope.row.playNum }}</span>
-          </router-link>
-
-        </template>
       </el-table-column>
       <el-table-column label="ICON" align="center" prop="icon">
         <template slot-scope="scope">
@@ -650,16 +642,15 @@ export default {
             updatePlay(submitData).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
-              this.getList();
             });
           } else {
             addPlay(submitData).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
-              this.getList();
             });
           }
         }
+        this.getList()
       });
     },
     /** 删除按钮操作 */
@@ -671,8 +662,12 @@ export default {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {
+        this.$modal.msgError("删除失败");
       });
-    }
+    },
+
+
+
   }
 };
 </script>

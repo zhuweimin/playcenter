@@ -210,7 +210,7 @@ export default {
     /** 事件类型清除事件处理 */
     handleEventTypeClear() {
       // 清除事件类型筛选条件后重新查询列表
-      this.queryParam.pageNum = 0;
+      this.queryParam.pageNum = 1;
       this.getList();
     },
     // 获取字典数据
@@ -232,7 +232,7 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParam.pageNum = 0;
+      this.queryParam.pageNum = 1;
       this.getList();
     },
 

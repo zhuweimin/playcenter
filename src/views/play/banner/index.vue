@@ -9,6 +9,21 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="语言" prop="language">
+        <el-select
+          v-model="queryParams.language"
+          placeholder="请选择语言"
+          clearable
+          @change="handleQuery"
+        >
+          <el-option
+            v-for="dict in languageOptions"
+            :key="dict.dictLabel"
+            :label="dict.dictValue"
+            :value="dict.dictLabel"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="开始时间" prop="startTime">
         <el-date-picker
           v-model="queryParams.startTime"
@@ -171,10 +186,7 @@
             action=""
             :http-request="uploadBanner"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
-            :data="{ uploadType: 3, id: form.id !== undefined ? form.id : '' }"
-            :headers="{ 'Authorization': 'Bearer ' + $store.getters.token }"
           >
             <img v-if="form.bannerImg" :src="form.bannerImg" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -194,9 +206,9 @@
 </template>
 
 <script>
-import {playList,uploadImg} from "@/api/play/play";
+import {playList, uploadImg} from "@/api/play/play";
 import {listBanner, saveBanner, updateBanner, delBanner} from "@/api/play/banner";
-
+import {getDicts} from "@/api/system/dict/data";
 export default {
   name: "PlayBanner",
   data() {
@@ -205,6 +217,7 @@ export default {
       loading: true,
       // 遮罩层（游戏搜索）
       playLoading: false,
+      languageOptions: [],
       // 选中数组
       ids: [],
       id: undefined,
@@ -233,6 +246,7 @@ export default {
         pageNum: 0,
         pageSize: 10,
         playName: undefined,
+        language: undefined,
         status: undefined,
         endTime: undefined,
         startTime: undefined
@@ -255,9 +269,18 @@ export default {
   },
   created() {
     this.listBanner();
+    this.dictList();
   },
   methods: {
-
+    dictList() {
+      getDicts("language_type").then(response => {
+        this.languageOptions = response.data;
+      }).catch(error => {
+        console.error("获取字典列表失败:", error);
+        this.$message.error("获取字典列表失败，请稍后重试");
+        this.loading = false;
+      })
+    },
     /** 查询游戏横幅列表 */
     listBanner() {
       this.loading = true;
@@ -270,23 +293,37 @@ export default {
     uploadBanner(option) {
       const formData = new FormData();
       formData.append('file', option.file);
-      formData.append('uploadType', 1);
+      formData.append('uploadType', 3);
       // 添加其他参数到formData中
       if (this.form.id !== undefined) {
         formData.append('id', this.form.id);
-
       }
+
       uploadImg(formData).then(response => {
-        this.bannerImg = response.data.path;
+        // 直接更新表单中的bannerImg字段
+        this.form.bannerImg = response.data.path;
+        // 如果需要保存id
+        if (response.data.id) {
+          this.form.id = response.data.id;
+        }
+        // 调用上传成功的回调（如果需要）
+        if (option.onSuccess) {
+          option.onSuccess(response);
+        }
+      }).catch(error => {
+        // 处理上传失败的情况
+        if (option.onError) {
+          option.onError(error);
+        }
       });
     },
-    handleAvatarSuccess(res, file) {
-      this.bannerImg = res.data.path;
-      this.id = res.data.id;
-      this.file=file;
-      this.form.bannerImg=res.data.path;
-      this.form.id=res.data.id;
-    },
+    // handleAvatarSuccess(res, file) {
+    //   this.bannerImg = res.data.path;
+    //   this.id = res.data.id;
+    //   this.file=file;
+    //   this.form.bannerImg=res.data.path;
+    //   this.form.id=res.data.id;
+    // },
     handleRemove(file, fileList) {
     },
     beforeAvatarUpload(file) {
@@ -306,6 +343,7 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+      this.listBanner();
     },
     // 表单重置
     reset() {
@@ -348,7 +386,7 @@ export default {
       // 获取横幅详细信息
       // 这里应该调用获取横幅详情的接口
       // 模拟获取数据
-      this.form =row;
+      this.form = row;
       row.createTime = '';
       // 查询游戏列表
       this.searchPlayList();
@@ -362,28 +400,26 @@ export default {
           // 这里应该调用新增或修改横幅的接口
           if (this.form.id != null) {
             updateBanner(this.form).then(response => {
-              if(response.code === 200){
+              if (response.code === 200) {
                 this.$modal.msgSuccess("修改成功");
                 this.open = false;
-                this.listBanner();
-              }else{
+              } else {
                 this.$modal.msgError(response.msg);
               }
 
             })
           } else {
             saveBanner(this.form).then(response => {
-              if(response.code === 200) {
+              if (response.code === 200) {
                 this.$modal.msgSuccess("新增成功");
                 this.open = false;
-                this.listBanner();
-              }else{
+              } else {
                 this.$modal.msgError(response.msg);
               }
             })
           }
 
-
+          this.listBanner()
         }
       });
     },
@@ -392,7 +428,7 @@ export default {
       const bannerIds = row.id || this.ids;
 
       this.$modal.confirm('是否确认删除游戏横幅编号为"' + bannerIds + '"的数据项？').then(() => {
-        this.loading=true;
+        this.loading = true;
         // 这里应该调用删除横幅的接口
         return delBanner(bannerIds);
         // 模拟删除操作

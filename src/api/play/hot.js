@@ -30,9 +30,10 @@ export function updateHot(data) {
 }
 
 // 删除play
-export function delHot(id) {
+export function delHot(param) {
   return request({
-    url: '/play/hot/delHot/?id='+id,
-    method: 'post'
+    url: '/play/hot/deleteHot/',
+    method: 'post',
+    data: param
   })
 }

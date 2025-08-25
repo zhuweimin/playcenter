@@ -65,10 +65,11 @@ export function uploadGame(data) {
     }
   });
 }
-export function getPlayLogDetail(id) {
+export function getPlayLogList(param) {
   return request({
-    url: `/play/info/log/${id}`,
-    method: 'get'
+    url: `/play/info/log/list`,
+    method: 'post',
+    data: param
   })
 }
 export function getPlayLogDetailByTime(params) {
